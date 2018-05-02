@@ -1,5 +1,4 @@
 import XCTest
-
 import UrlRouter
 
 class RoutesTreeTests: XCTestCase {
