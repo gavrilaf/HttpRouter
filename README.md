@@ -1,3 +1,3 @@
-# UrlRouter
+# HttpRouter
 
-A description of this package.
+Lightweight "Golang style" http router for Swift
