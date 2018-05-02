@@ -1,5 +1,6 @@
 import XCTest
-@testable import UrlRouter
+
+import UrlRouter
 
 class RoutesTreeTests: XCTestCase {
     func testSimpleRoutes() {
@@ -20,7 +21,7 @@ class RoutesTreeTests: XCTestCase {
         }
         
         for (i, u) in urls.enumerated() {
-            let v = tree.get(byUrl: u)
+            let v = tree.find(byUrl: u)
             XCTAssertEqual(i, v)
         }
     }

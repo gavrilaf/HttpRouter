@@ -1,25 +1,13 @@
 import Foundation
 
 
-struct RoutesTree<T> {
+public struct RoutesTree<T> {
     
-    class Node<T> {
-        init(name: String, value: T?, children: Dictionary<String, Node>) {
-            self.name = name
-            self.value = value
-            self.children = children
-        }
-        
-        var name: String
-        var value: T?
-        var children: Dictionary<String, Node>
-    }
-    
-    init() {
+    public init() {
         root = Node<T>(name: "*", value: nil, children: [:])
     }
     
-    func add(url: URL, value: T) {
+    public func add(url: URL, value: T) {
         var current = root
         
         for s in url.pathComponents {
@@ -35,8 +23,7 @@ struct RoutesTree<T> {
         current.value = value
     }
     
-    
-    func get(byUrl url: URL) -> T? {
+    public func find(byUrl url: URL) -> T? {
         var current = root
         
         for s in url.pathComponents {
@@ -50,7 +37,19 @@ struct RoutesTree<T> {
         return current.value
     }
     
+    // MARK: - private
+    
+    class Node<T> {
+        init(name: String, value: T?, children: Dictionary<String, Node>) {
+            self.name = name
+            self.value = value
+            self.children = children
+        }
+        
+        var name: String
+        var value: T?
+        var children: Dictionary<String, Node>
+    }
     
     var root: Node<T>
-    
 }
