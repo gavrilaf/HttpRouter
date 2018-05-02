@@ -1,6 +1,7 @@
 import XCTest
-@testable import UrlRouterTests
+@testable import HttpRouterTests
 
 XCTMain([
-    testCase(UrlRouterTests.allTests),
+    testCase(RoutesTreeTests.allTests),
+    testCase(GithubAPITests.allTests),
 ])

@@ -1,5 +1,5 @@
 import XCTest
-import UrlRouter
+import HttpRouter
 
 class GithubAPITests: XCTestCase {
     
@@ -244,4 +244,8 @@ class GithubAPITests: XCTestCase {
         XCTAssertNil(router.find(byUrl: URL(string: "/a/b/c")!))
         XCTAssertEqual("/user/repos", router.find(byUrl: URL(string: "/user/repos")!))
     }
+    
+    static var allTests = [
+        ("testStatic", testStatic),
+    ]
 }

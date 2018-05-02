@@ -1,5 +1,5 @@
 import XCTest
-import UrlRouter
+import HttpRouter
 
 class RoutesTreeTests: XCTestCase {
     func testSimpleRoutes() {
