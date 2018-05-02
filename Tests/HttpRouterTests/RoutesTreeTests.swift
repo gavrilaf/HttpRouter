@@ -3,24 +3,24 @@ import HttpRouter
 
 class RoutesTreeTests: XCTestCase {
     func testSimpleRoutes() {
-        let urls = [
-            URL(string: "/")!,
-            URL(string: "/a")!,
-            URL(string: "/b/")!,
-            URL(string: "/c/d")!,
-            URL(string: "/public/tickers")!,
-            URL(string: "/auth/register")!,
-            URL(string: "/auth/login")!,
+        let urls: [(HttpMethod, URL)] = [
+            (.get, URL(string: "/")!),
+            (.post, URL(string: "/a")!),
+            (.delete, URL(string: "/b/")!),
+            (.put, URL(string: "/c/d")!),
+            (.get, URL(string: "/public/tickers")!),
+            (.put, URL(string: "/auth/register")!),
+            (.post, URL(string: "/auth/login")!),
         ]
         
         let tree = RoutesTree<Int>()
         
         for (i, u) in urls.enumerated() {
-            tree.add(url: u, value: i)
+            tree.add(method: u.0, url: u.1, value: i)
         }
         
         for (i, u) in urls.enumerated() {
-            let v = tree.find(byUrl: u)
+            let v = tree.find(method: u.0, url: u.1)
             XCTAssertEqual(i, v)
         }
     }

@@ -7,10 +7,10 @@ public struct RoutesTree<T> {
         root = Node<T>(name: "*", value: nil, children: [:])
     }
     
-    public func add(url: URL, value: T) {
+    public func add(method: HttpMethod, url: URL, value: T) {
         var current = root
-        
-        for s in url.pathComponents {
+        let components = [method.rawValue] + url.pathComponents
+        for s in components {
             if let next = current.children[s] {
                 current = next
             } else {
@@ -23,10 +23,11 @@ public struct RoutesTree<T> {
         current.value = value
     }
     
-    public func find(byUrl url: URL) -> T? {
+    public func find(method: HttpMethod, url: URL) -> T? {
         var current = root
         
-        for s in url.pathComponents {
+        let components = [method.rawValue] + url.pathComponents
+        for s in components {
             if let next = current.children[s] {
                 current = next
             } else {
