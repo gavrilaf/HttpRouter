@@ -16,12 +16,12 @@ class RoutesTreeTests: XCTestCase {
         let tree = RoutesTree<Int>()
         
         for (i, u) in urls.enumerated() {
-            tree.add(method: u.0, url: u.1, value: i)
+            try! tree.add(method: u.0, url: u.1, value: i)
         }
         
         for (i, u) in urls.enumerated() {
-            let v = tree.find(method: u.0, url: u.1)
-            XCTAssertEqual(i, v)
+            let v = tree.lookup(method: u.0, url: u.1)
+            XCTAssertEqual(i, v?.value)
         }
     }
 

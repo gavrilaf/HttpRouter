@@ -236,16 +236,16 @@ class GithubAPITests: XCTestCase {
         router = RoutesTree<String>()
         
         for route in githubAPI {
-            router.add(method: HttpMethod(rawValue: route.0)!, url: URL(string: route.1)!, value: route.1)
+            try! router.add(method: HttpMethod(rawValue: route.0)!, url: URL(string: route.1)!, value: route.1)
         }
     }
     
     func testStatic() {
-        XCTAssertNil(router.find(method: .get, url: URL(string: "/a/b/c")!))
-        XCTAssertNil(router.find(method: .delete, url: URL(string: "/user/repos")!))
+        XCTAssertNil(router.lookup(method: .get, url: URL(string: "/a/b/c")!))
+        XCTAssertNil(router.lookup(method: .delete, url: URL(string: "/user/repos")!))
         
-        XCTAssertEqual("/user/repos", router.find(method: .get, url: URL(string: "/user/repos")!))
-        XCTAssertEqual("/user/repos", router.find(method: .post, url: URL(string: "/user/repos")!))
+        XCTAssertEqual("/user/repos", router.lookup(method: .get, url: URL(string: "/user/repos")!)?.value)
+        XCTAssertEqual("/user/repos", router.lookup(method: .post, url: URL(string: "/user/repos")!)?.value)
     }
     
     static var allTests = [
