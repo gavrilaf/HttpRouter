@@ -1,7 +1,7 @@
 import XCTest
 @testable import UrlRouter
 
-class UrlRouterTests: XCTestCase {
+class RoutesTreeTests: XCTestCase {
     func testSimpleRoutes() {
         let urls = [
             URL(string: "/")!,
