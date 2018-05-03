@@ -1,6 +1,5 @@
 import Foundation
 
-
 public struct RoutesTree<T> {
     
     public struct Result<T> {
@@ -16,6 +15,7 @@ public struct RoutesTree<T> {
     public func add(method: HttpMethod, url: URL, value: T) throws {
         var current = root
         let components = [method.rawValue] + url.pathComponents
+        
         for s in components {
             if s.hasPrefix(":") { // wild
                 let wildName = String(s.dropFirst())
