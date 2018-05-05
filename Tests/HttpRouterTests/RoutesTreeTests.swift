@@ -63,9 +63,30 @@ class RoutesTreeTests: XCTestCase {
         XCTAssertEqual(r4?.value, "/auth/session/:id")
         XCTAssertEqual(r4?.urlParams["id"], "2")
     }
+    
+    func testMethods() {
+        let urls: [(HttpMethod, URL)] = [
+            (.get, URL(string: "/get")!),
+            (.post, URL(string: "/post")!),
+            (.put, URL(string: "/put")!),
+            (.delete, URL(string: "/delete")!),
+        ]
+        
+        let tree = RoutesTree<String>()
+        
+        for p in urls {
+            try! tree.add(method: p.0, url: p.1, value: p.1.absoluteString)
+        }
+        
+        XCTAssertEqual(tree.lookup(method: .get, url: URL(string: "/get")!)?.value, "/get")
+        XCTAssertEqual(tree.lookup(method: .post, url: URL(string: "/post")!)?.value, "/post")
+        XCTAssertEqual(tree.lookup(method: .put, url: URL(string: "/put")!)?.value, "/put")
+        XCTAssertEqual(tree.lookup(method: .delete, url: URL(string: "/delete")!)?.value, "/delete")
+    }
 
     static var allTests = [
         ("testSimpleRoutes", testSimpleRoutes),
         ("testParams", testParams),
+        ("testMethods", testMethods),
     ]
 }

@@ -24,8 +24,18 @@ class GithubAPITests: XCTestCase {
         XCTAssertEqual("/user/repos", router.lookup(method: .post, url: URL(string: "/user/repos")!)?.value)
     }
     
+    func testParams() {
+        let r = router.lookup(method: .get, url: URL(string: "/repos/gavrilaf/httprouter/stargazers")!)
+        
+        XCTAssertNotNil(r)
+        XCTAssertEqual(r?.value, "/repos/:owner/:repo/stargazers")
+        XCTAssertEqual(r?.urlParams["owner"], "gavrilaf")
+        XCTAssertEqual(r?.urlParams["repo"], "httprouter")
+    }
+    
     static var allTests = [
-        ("testStatic", testStatic),
         ("testNonExisting", testNonExisting),
+        ("testStatic", testStatic),
+        ("testParams", testParams),
     ]
 }

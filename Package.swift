@@ -12,10 +12,10 @@ let package = Package(
         .executable(name: "RouterBenchmark", targets: ["RouterBenchmark"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-nio.git", from: "1.0.0"),
+        //.package(url: "https://github.com/apple/swift-nio.git", from: "1.0.0"),
     ],
     targets: [
-        .target(name: "HttpRouter", dependencies: ["NIOHTTP1"]),
+        .target(name: "HttpRouter", dependencies: []),
         .target(name: "HttpTestApi", dependencies: ["HttpRouter"]),
         .target(name: "RouterBenchmark", dependencies: ["HttpRouter"]),
         .testTarget(name: "HttpRouterTests", dependencies: ["HttpRouter", "HttpTestApi"]),
