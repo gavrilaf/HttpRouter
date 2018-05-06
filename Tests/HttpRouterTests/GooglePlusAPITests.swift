@@ -33,10 +33,19 @@ class GooglePlusAPITests: XCTestCase {
         XCTAssertEqual(r?.urlParams["userId"], "gavrilaf")
         XCTAssertEqual(r?.urlParams["collection"], "photos")
     }
+    
+    func testAllRoutes() {
+        for route in GooglePlus.api {
+            let method = HttpMethod(rawValue: route.0)!
+            let path = route.1
+            XCTAssertEqual(path, router.lookup(method: method, url: URL(string: path)!)?.value)
+        }
+    }
 
     static var allTests = [
         ("testNonExisting", testNonExisting),
         ("testStatic", testStatic),
         ("testParams", testParams),
+        ("testAllRoutes", testAllRoutes),
     ]
 }

@@ -33,9 +33,18 @@ class GithubAPITests: XCTestCase {
         XCTAssertEqual(r?.urlParams["repo"], "httprouter")
     }
     
+    func testAllRoutes() {
+        for route in Github.api {
+            let method = HttpMethod(rawValue: route.0)!
+            let path = route.1
+            XCTAssertEqual(path, router.lookup(method: method, url: URL(string: path)!)?.value)
+        }
+    }
+    
     static var allTests = [
         ("testNonExisting", testNonExisting),
         ("testStatic", testStatic),
         ("testParams", testParams),
+        ("testAllRoutes", testAllRoutes),
     ]
 }
