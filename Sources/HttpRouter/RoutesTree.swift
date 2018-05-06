@@ -1,18 +1,12 @@
 import Foundation
 
-public struct RoutesTree<T> {
+public class RouterDict<T>: Router<T> {
     
-    public struct Result<T> {
-        public let value: T
-        public let urlParams: [String: String]
-        public let queryParams: [String: String]
-    }
-    
-    public init() {
+    public override  init() {
         root = Node<T>(name: "*", value: nil, children: [:])
     }
     
-    public func add(method: HttpMethod, url: URL, value: T) throws {
+    public override func add(method: HttpMethod, url: URL, value: T) throws {
         var current = root
         let components = [method.rawValue] + url.pathComponents
         
@@ -44,7 +38,7 @@ public struct RoutesTree<T> {
         current.value = value
     }
     
-    public func lookup(method: HttpMethod, url: URL) -> Result<T>? {
+    override public func lookup(method: HttpMethod, url: URL) -> Result<T>? {
         var current = root
         var urlParams = [String: String]()
         

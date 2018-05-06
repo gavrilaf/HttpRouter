@@ -4,7 +4,7 @@ import HttpTestApi
 
 
 func measureGithub() {
-    let router = RoutesTree<String>()
+    let router = RouterDict<String>()
     for route in Github.api {
         try! router.add(method: HttpMethod(rawValue: route.0)!, url: URL(string: route.1)!, value: route.1)
     }
