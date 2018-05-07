@@ -1,20 +1,20 @@
 import Foundation
 import HttpRouter
 
-typealias TestBlock = (Router<String>) -> Void
+typealias TestBlock<T> = (T) -> Void where T: RouterProtocol, T.StoredValue == String
 
-func testRouter(_ router: Router<String>, routes: [(HttpMethod, URL)], testBlock: TestBlock) {
+func testRouter<T>(_ router: Router<T>, routes: [(HttpMethod, URL)], check: TestBlock<Router<T>>) where T.Element == String {
     for p in routes {
         try! router.add(method: p.0, url: p.1, value: p.1.absoluteString)
     }
     
-    testBlock(router)
+    check(router)
 }
 
-func testRouterS(_ router: Router<String>, routes: [(String, String)], testBlock: TestBlock) {
+func testRouterS<T>(_ router: Router<T>, routes: [(String, String)], check: TestBlock<Router<T>>)  where T.Element == String {
     for p in routes {
         try! router.add(method: HttpMethod(rawValue: p.0)!, url: URL(string: p.1)!, value: p.1)
     }
     
-    testBlock(router)
+    check(router)
 }

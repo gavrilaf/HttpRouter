@@ -1,7 +1,7 @@
 import Foundation
 import HttpRouter
 
-func initRouter(_ router: Router<String>, routes: [(String, String)]) -> Router<String> {
+func initRouter<T>(_ router: Router<T>, routes: [(String, String)]) -> Router<T> where T.Element == String {
     for route in routes {
         try! router.add(method: HttpMethod(rawValue: route.0)!, url: URL(string: route.1)!, value: route.1)
     }
@@ -17,9 +17,9 @@ func measure(iterations: Int, _ block: () -> Void) -> Double {
     return CFAbsoluteTimeGetCurrent() - startTime
 }
 
-struct PerfReq {
+struct PerfReq<T: RouterProtocol>{
     let name: String
-    let router: Router<String>
+    let router: T
     let api: [(String, String)]
     let staticUrl: String
     let paramsUrl: String
@@ -38,8 +38,8 @@ extension PerfRes: CustomStringConvertible {
     }
 }
 
-func measureApi(_ req: PerfReq) -> PerfRes {
-    let basicIterations = 10000
+func measureApi<T>(_ req: PerfReq<T>) -> PerfRes where T.StoredValue == String {
+    let basicIterations = 100000
     
     let staticUrl = URL(string: req.staticUrl)!
     let staticBlock = {

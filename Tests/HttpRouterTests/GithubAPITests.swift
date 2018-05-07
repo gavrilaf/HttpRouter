@@ -5,25 +5,29 @@ import HttpTestApi
 class GithubAPITests: XCTestCase {
     
     func testNonExisting() {
-        let testBlock: TestBlock = { (router) in
+        func check<T: RouterProtocol>(router: T) where T.StoredValue == String {
             XCTAssertNil(router.lookup(method: .get, url: URL(string: "/a/b/c")!))
             XCTAssertNil(router.lookup(method: .delete, url: URL(string: "/user/repos")!))
         }
         
-        testRouterS(RouterDict<String>(), routes: Github.api, testBlock: testBlock)
+        testRouterS(RouterDict<String>(), routes: Github.api, check: check)
+        testRouterS(RouterArray<String>(), routes: Github.api, check: check)
+        testRouterS(RouterSortedArray<String>(), routes: Github.api, check: check)
     }
     
     func testStatic() {
-        let testBlock: TestBlock = { (router) in
+        func check<T: RouterProtocol>(router: T) where T.StoredValue == String {
             XCTAssertEqual("/user/repos", router.lookup(method: .get, url: URL(string: "/user/repos")!)?.value)
             XCTAssertEqual("/user/repos", router.lookup(method: .post, url: URL(string: "/user/repos")!)?.value)
         }
         
-        testRouterS(RouterDict<String>(), routes: Github.api, testBlock: testBlock)
+        testRouterS(RouterDict<String>(), routes: Github.api, check: check)
+        testRouterS(RouterArray<String>(), routes: Github.api, check: check)
+        testRouterS(RouterSortedArray<String>(), routes: Github.api, check: check)
     }
     
     func testParams() {
-        let testBlock: TestBlock = { (router) in
+        func check<T: RouterProtocol>(router: T) where T.StoredValue == String {
             let r = router.lookup(method: .get, url: URL(string: "/repos/gavrilaf/httprouter/stargazers")!)
             XCTAssertNotNil(r)
             XCTAssertEqual(r?.value, "/repos/:owner/:repo/stargazers")
@@ -31,11 +35,13 @@ class GithubAPITests: XCTestCase {
             XCTAssertEqual(r?.urlParams["repo"], "httprouter")
         }
         
-        testRouterS(RouterDict<String>(), routes: Github.api, testBlock: testBlock)
+        testRouterS(RouterDict<String>(), routes: Github.api, check: check)
+        testRouterS(RouterArray<String>(), routes: Github.api, check: check)
+        testRouterS(RouterSortedArray<String>(), routes: Github.api, check: check)
     }
     
     func testAllRoutes() {
-        let testBlock: TestBlock = { (router) in
+        func check<T: RouterProtocol>(router: T) where T.StoredValue == String {
             for route in Github.api {
                 let method = HttpMethod(rawValue: route.0)!
                 let path = route.1
@@ -43,7 +49,9 @@ class GithubAPITests: XCTestCase {
             }
         }
         
-        testRouterS(RouterDict<String>(), routes: Github.api, testBlock: testBlock)
+        testRouterS(RouterDict<String>(), routes: Github.api, check: check)
+        testRouterS(RouterArray<String>(), routes: Github.api, check: check)
+        testRouterS(RouterSortedArray<String>(), routes: Github.api, check: check)
     }
     
     static var allTests = [
