@@ -17,7 +17,7 @@ let package = Package(
     targets: [
         .target(name: "HttpRouter", dependencies: []),
         .target(name: "HttpTestApi", dependencies: ["HttpRouter"]),
-        .target(name: "RouterBenchmark", dependencies: ["HttpRouter"]),
+        .target(name: "RouterBenchmark", dependencies: ["HttpRouter", "HttpTestApi"]),
         .testTarget(name: "HttpRouterTests", dependencies: ["HttpRouter", "HttpTestApi"]),
     ]
 )
