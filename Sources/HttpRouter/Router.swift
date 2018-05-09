@@ -9,8 +9,8 @@ public struct RouterResult<T> {
 public protocol RouterProtocol {
     associatedtype StoredValue
     
-    func add(method: HttpMethod, url: URL, value: StoredValue) throws
-    func lookup(method: HttpMethod, url: URL) -> RouterResult<StoredValue>?
+    func add(method: HttpMethod, uri: String, value: StoredValue) throws
+    func lookup(method: HttpMethod, uri: String) -> RouterResult<StoredValue>?
 }
 
 public final class Router<Node: NodeProtocol>: RouterProtocol {
@@ -21,9 +21,9 @@ public final class Router<Node: NodeProtocol>: RouterProtocol {
         root = Node(name: "*", value: nil)
     }
     
-    public func add(method: HttpMethod, url: URL, value: Node.Element) throws {
+    public func add(method: HttpMethod, uri: String, value: Node.Element) throws {
         var current = root
-        let components = [method.rawValue] + url.pathComponents
+        let components = PathBuilder(method: method, uri: uri).pathComponents
         
         for s in components {
             if s.hasPrefix(":") { // wild
@@ -53,11 +53,12 @@ public final class Router<Node: NodeProtocol>: RouterProtocol {
         current.value = value
     }
     
-    public func lookup(method: HttpMethod, url: URL) -> RouterResult<Node.Element>? {
+    public func lookup(method: HttpMethod, uri: String) -> RouterResult<Node.Element>? {
         var current = root
         var urlParams = [String: String]()
         
-        let components = [method.rawValue] + url.pathComponents
+        let components = PathBuilder(method: method, uri: uri).pathComponents
+        
         for s in components {
             if let next = current.getChild(name: s) {
                 current = next

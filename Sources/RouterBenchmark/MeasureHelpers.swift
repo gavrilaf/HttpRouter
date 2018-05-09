@@ -3,7 +3,7 @@ import HttpRouter
 
 func initRouter<T>(_ router: Router<T>, routes: [(String, String)]) -> Router<T> where T.Element == String {
     for route in routes {
-        try! router.add(method: HttpMethod(rawValue: route.0)!, url: URL(string: route.1)!, value: route.1)
+        try! router.add(method: HttpMethod(rawValue: route.0)!, uri: route.1, value: route.1)
     }
     
     return router
@@ -39,21 +39,19 @@ extension PerfRes: CustomStringConvertible {
 }
 
 func measureApi<T>(_ router: Router<T>, _ req: PerfReq) -> PerfRes where T.Element == String {
-    let basicIterations = 100000
+    let basicIterations = 50000
     
-    let staticUrl = URL(string: req.staticUrl)!
     let staticBlock = {
-        _ = router.lookup(method: .get, url: staticUrl)
+        _ = router.lookup(method: .get, uri: req.staticUrl)
     }
     
-    let paramsUrl = URL(string: req.paramsUrl)!
     let paramsBlock = {
-        _ = router.lookup(method: .get, url: paramsUrl)
+        _ = router.lookup(method: .get, uri: req.paramsUrl)
     }
     
     let allApiBlock = {
         for route in req.api {
-            _ = router.lookup(method: HttpMethod(rawValue: route.0)!, url: URL(string: route.1)!)
+            _ = router.lookup(method: HttpMethod(rawValue: route.0)!, uri: route.1)
         }
     }
     

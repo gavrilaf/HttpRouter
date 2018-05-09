@@ -5,7 +5,7 @@ import HttpTestApi
 
 func RunMeasure() {
     let requests: [PerfReq] = [
-        PerfReq(apiName: "github",
+        PerfReq(apiName: "Github",
                 api: Github.api,
                 staticUrl: "/user/repos",
                 paramsUrl: "/repos/gavrilaf/httprouter/stargazers"),
