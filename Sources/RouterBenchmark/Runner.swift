@@ -12,7 +12,11 @@ func RunMeasure() {
         PerfReq(apiName: "GooglePlus",
                 api: GooglePlus.api,
                 staticUrl: "/activities",
-                paramsUrl: "/people/gavrilaf/moments/photos")
+                paramsUrl: "/people/gavrilaf/moments/photos"),
+        PerfReq(apiName: "Parse",
+                api: Parse.api,
+                staticUrl: "/1/users",
+                paramsUrl: "/1/classes/swift/123456789")
     ]
     
     let results = requests.flatMap {
@@ -21,8 +25,8 @@ func RunMeasure() {
     
     let group = Dictionary(grouping: results, by: { $0.routerName })
     
-    //print("*** results ***")
-    //results.forEach { print("\($0)") }
+    print("*** results ***")
+    results.forEach { print("\($0)") }
     
     print("\n\n*** mean ***\n")
     

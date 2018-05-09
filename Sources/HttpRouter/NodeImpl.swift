@@ -73,9 +73,10 @@ public final class NodeSortedArray<T>: NodeProtocol {
     
     var children = Array<NodeSortedArray>()
     
-    func bSearch(name: String) -> Array<NodeSortedArray>.Index {
+    func bSearch(name: String) -> Int {
         var low = 0
         var high = children.count
+        
         while low != high {
             let mid = low + (high - low) / 2
             if children[mid].name < name {
