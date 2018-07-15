@@ -1,7 +1,6 @@
 import Foundation
 
 struct UriParser {
-    
     static let questionMark = Character("?")
     static let slash = Character("/")
     static let amp = Character("&")

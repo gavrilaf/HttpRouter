@@ -1,7 +1,5 @@
 import Foundation
 
-public typealias StringDict = [String: String]
-
 public struct RouterResult<T> {
     public let value: T
     public let urlParams: [Substring: Substring]
@@ -57,8 +55,7 @@ public final class Router<Node: NodeProtocol>: RouterProtocol {
         }
         
         // create node with HTTP method
-        let methodStr = method.rawValue
-        let methodNode = Node(name: methodStr[methodStr.startIndex...], allPath: false)
+        let methodNode = Node(name: method.rawValue.substr, allPath: false)
         methodNode.value = value
         
         current.addChild(node: methodNode)
@@ -68,11 +65,12 @@ public final class Router<Node: NodeProtocol>: RouterProtocol {
         var current = root
         var urlParams = [Substring: Substring]()
         
-        let methodStr = method.rawValue
+        let methodStr = method.rawValue.substr
+        
         let parsedUri = UriParser(uri: uri)
         var components = parsedUri.pathComponents
         
-        components.append(methodStr[methodStr.startIndex...]) // POST: /action/send -> ['action', 'send', 'POST']
+        components.append(methodStr) // POST: /action/send -> ['action', 'send', 'POST']
         
         for (indx, s) in components.enumerated() {
             if let next = current.getChild(name: s) {
@@ -80,8 +78,8 @@ public final class Router<Node: NodeProtocol>: RouterProtocol {
             } else if let paramChild = current.paramChild {
                 if paramChild.allPath {
                     let joined = components[indx..<components.count-1].joined(separator: "/")
-                    urlParams[paramChild.name] = joined[joined.startIndex...]
-                    if let methodChild = paramChild.getChild(name: methodStr[methodStr.startIndex...]) {
+                    urlParams[paramChild.name] = joined.substr
+                    if let methodChild = paramChild.getChild(name: methodStr) {
                         current = methodChild
                         break
                     } else {
