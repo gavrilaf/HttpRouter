@@ -17,8 +17,8 @@ class UriParserTests: XCTestCase {
     
     func testQueryParams() {
         XCTAssertEqual([:], UriParser(uri: "/").queryParams)
-        XCTAssertEqual(["a": "10"], UriParser(uri: "?a=10").queryParams)
-        XCTAssertEqual(["a": "10", "b": ""], UriParser(uri: "?a=10&b=").queryParams)
+        XCTAssertEqual(["a": "10"], UriParser(uri: "query?a=10").queryParams)
+        XCTAssertEqual(["a": "10", "b": ""], UriParser(uri: "query?a=10&b=").queryParams)
     }
     
     static var allTests = [

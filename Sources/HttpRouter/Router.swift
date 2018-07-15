@@ -1,11 +1,9 @@
 import Foundation
 
-public typealias StringDict = [String: String]
-
 public struct RouterResult<T> {
     public let value: T
-    public let urlParams: [String: String]
-    public let queryParams: [String: String]
+    public let urlParams: [Substring: Substring]
+    public let queryParams: [Substring: Substring]
 }
 
 public protocol RouterProtocol {
@@ -41,7 +39,7 @@ public final class Router<Node: NodeProtocol>: RouterProtocol {
                         throw RouterError.invalidPath(path: relativePath)
                     }
                 } else {
-                    let newNode = Node(name: String(paramName), allPath: s.hasPrefix("*"))
+                    let newNode = Node(name: paramName, allPath: s.hasPrefix("*"))
                     current.paramChild = newNode
                     current = newNode
                 }
@@ -57,7 +55,7 @@ public final class Router<Node: NodeProtocol>: RouterProtocol {
         }
         
         // create node with HTTP method
-        let methodNode = Node(name: method.rawValue, allPath: false)
+        let methodNode = Node(name: method.rawValue.substr, allPath: false)
         methodNode.value = value
         
         current.addChild(node: methodNode)
@@ -65,19 +63,23 @@ public final class Router<Node: NodeProtocol>: RouterProtocol {
     
     public func lookup(method: HttpMethod, uri: String) -> RouterResult<StoredValue>? {
         var current = root
-        var urlParams = StringDict()
+        var urlParams = [Substring: Substring]()
+        
+        let methodStr = method.rawValue.substr
         
         let parsedUri = UriParser(uri: uri)
         var components = parsedUri.pathComponents
-        components.append(method.rawValue) // POST: /action/send -> ['action', 'send', 'POST']
+        
+        components.append(methodStr) // POST: /action/send -> ['action', 'send', 'POST']
         
         for (indx, s) in components.enumerated() {
             if let next = current.getChild(name: s) {
                 current = next
             } else if let paramChild = current.paramChild {
                 if paramChild.allPath {
-                    urlParams[paramChild.name] = components[indx..<components.count-1].joined(separator: "/")
-                    if let methodChild = paramChild.getChild(name: method.rawValue) {
+                    let joined = components[indx..<components.count-1].joined(separator: "/")
+                    urlParams[paramChild.name] = joined.substr
+                    if let methodChild = paramChild.getChild(name: methodStr) {
                         current = methodChild
                         break
                     } else {
