@@ -4,12 +4,12 @@ import Foundation
 public final class NodeDict<T>: NodeProtocol {
     public typealias Element = T
     
-    public required init(name: String, allPath: Bool) {
+    public required init(name: Substring, allPath: Bool) {
         self.name = name
         self.allPath = allPath
     }
     
-    public var name: String
+    public var name: Substring
     public var value: Element?
     
     public var allPath: Bool
@@ -19,23 +19,23 @@ public final class NodeDict<T>: NodeProtocol {
         children[node.name] = node
     }
     
-    public func getChild(name: String) -> NodeDict? {
+    public func getChild(name: Substring) -> NodeDict? {
         return children[name]
     }
     
-    private var children = Dictionary<String, NodeDict>()
+    private var children = Dictionary<Substring, NodeDict>()
 }
 
 /////////////////////////////////////////////////////////////////////////////////
 public final class NodeArray<T>: NodeProtocol {
     public typealias Element = T
     
-    public required init(name: String, allPath: Bool) {
+    public required init(name: Substring, allPath: Bool) {
         self.name = name
         self.allPath = allPath
     }
     
-    public var name: String
+    public var name: Substring
     public var value: Element?
     
     public var allPath: Bool
@@ -45,7 +45,7 @@ public final class NodeArray<T>: NodeProtocol {
         children.append(node)
     }
     
-    public func getChild(name: String) -> NodeArray? {
+    public func getChild(name: Substring) -> NodeArray? {
         return children.first { return $0.name == name }
     }
     
@@ -57,12 +57,12 @@ public final class NodeArray<T>: NodeProtocol {
 public final class NodeSortedArray<T>: NodeProtocol {
     public typealias Element = T
     
-    public required init(name: String, allPath: Bool) {
+    public required init(name: Substring, allPath: Bool) {
         self.name = name
         self.allPath = allPath
     }
     
-    public var name: String
+    public var name: Substring
     public var value: Element?
     
     public var allPath: Bool
@@ -72,14 +72,14 @@ public final class NodeSortedArray<T>: NodeProtocol {
         children.insert(node, at: bSearch(name: node.name))
     }
     
-    public func getChild(name: String) -> NodeSortedArray? {
+    public func getChild(name: Substring) -> NodeSortedArray? {
         let index = bSearch(name: name)
         return index < children.count && children[index].name == name ? children[index] : nil
     }
     
     var children = Array<NodeSortedArray>()
     
-    func bSearch(name: String) -> Int {
+    func bSearch(name: Substring) -> Int {
         var low = 0
         var high = children.count
         
