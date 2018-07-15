@@ -1,6 +1,3 @@
 # HttpRouter
 
-Lightweight "Golang style" http router for Swift. 
-Based on Radix tree.
-
-Should be fast but I'm not sure yet )
+In this project, I'm trying to find the fastest HttpRouter implementation for Swift. 
