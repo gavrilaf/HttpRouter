@@ -1,5 +1,6 @@
 import Foundation
 
-public enum RouterError: Error {
-    case onlyOneWildAllowed
+enum RouterError: Error {
+    case invalidPath(path: String)
+    case notFound(method: HttpMethod, uri: String)
 }

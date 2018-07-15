@@ -3,7 +3,7 @@ import HttpRouter
 
 func initRouter<T>(_ router: Router<T>, routes: [(String, String)]) -> Router<T> where T.Element == String {
     for route in routes {
-        try! router.add(method: HttpMethod(rawValue: route.0)!, uri: route.1, value: route.1)
+        try! router.add(method: HttpMethod(rawValue: route.0)!, relativePath: route.1, value: route.1)
     }
     
     return router
@@ -17,14 +17,14 @@ func measure(iterations: Int, _ block: () -> Void) -> Double {
     return CFAbsoluteTimeGetCurrent() - startTime
 }
 
-struct PerfReq {
+struct PerfRequest {
     let apiName: String
     let api: [(String, String)]
     let staticUrl: String
     let paramsUrl: String
 }
 
-struct PerfRes {
+struct Measurement {
     let apiName: String
     let routerName: String
     let staticPerf: Double
@@ -32,13 +32,13 @@ struct PerfRes {
     let allApiPerf: Double
 }
 
-extension PerfRes: CustomStringConvertible {
+extension Measurement: CustomStringConvertible {
     var description: String {
         return "\(apiName) : \(routerName): static url: \(staticPerf), url with parameters: \(paramsPerf), all api: \(allApiPerf)"
     }
 }
 
-func measureApi<T>(_ router: Router<T>, _ req: PerfReq) -> PerfRes where T.Element == String {
+func measureApi<T>(_ router: Router<T>, _ req: PerfRequest) -> Measurement where T.Element == String {
     let basicIterations = 50000
     
     let staticBlock = {
@@ -61,5 +61,5 @@ func measureApi<T>(_ router: Router<T>, _ req: PerfReq) -> PerfRes where T.Eleme
     let iterationsForApi = basicIterations / req.api.count
     let allApiPerf = (measure(iterations: iterationsForApi, allApiBlock) / Double(iterationsForApi * req.api.count)) * 100
     
-    return PerfRes(apiName: req.apiName, routerName: "\(type(of: router))", staticPerf: staticPerf, paramsPerf: paramsPerf, allApiPerf: allApiPerf)
+    return Measurement(apiName: req.apiName, routerName: "\(type(of: router))", staticPerf: staticPerf, paramsPerf: paramsPerf, allApiPerf: allApiPerf)
 }

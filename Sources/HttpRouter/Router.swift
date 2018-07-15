@@ -1,5 +1,7 @@
 import Foundation
 
+public typealias StringDict = [String: String]
+
 public struct RouterResult<T> {
     public let value: T
     public let urlParams: [String: String]
@@ -9,7 +11,7 @@ public struct RouterResult<T> {
 public protocol RouterProtocol {
     associatedtype StoredValue
     
-    func add(method: HttpMethod, uri: String, value: StoredValue) throws
+    func add(method: HttpMethod, relativePath: String, value: StoredValue) throws
     func lookup(method: HttpMethod, uri: String) -> RouterResult<StoredValue>?
 }
 
@@ -18,64 +20,84 @@ public final class Router<Node: NodeProtocol>: RouterProtocol {
     public typealias StoredValue = Node.Element
     
     public init() {
-        root = Node(name: "*", value: nil)
+        root = Node(name: "*", allPath: false)
     }
     
-    public func add(method: HttpMethod, uri: String, value: Node.Element) throws {
+    public func add(method: HttpMethod, relativePath: String, value: StoredValue) throws {
         var current = root
-        let components = PathBuilder(method: method, uri: uri).pathComponents
+        let components = UriParser(uri: relativePath).pathComponents
         
-        for s in components {
-            if s.hasPrefix(":") { // wild
-                let wildName = String(s.dropFirst())
-                if let wild = current.wildChild {
-                    if wild.name == wildName {
-                        current = wild
-                    } else {
-                        throw RouterError.onlyOneWildAllowed
+        try components.forEach { (s) in
+            if current.allPath { // allPath param with children
+                throw RouterError.invalidPath(path: relativePath)
+            }
+            
+            if s.hasPrefix(":") || s.hasPrefix("*") { // param node
+                let paramName = s.dropFirst()
+                if let paramChild = current.paramChild {
+                    if paramChild.name == paramName {
+                        current = paramChild
+                    } else { // different param nodes on the one level
+                        throw RouterError.invalidPath(path: relativePath)
                     }
                 } else {
-                    let newNode = Node(name: wildName, value: nil)
-                    current.wildChild = newNode
+                    let newNode = Node(name: String(paramName), allPath: s.hasPrefix("*"))
+                    current.paramChild = newNode
                     current = newNode
                 }
             } else {
                 if let next = current.getChild(name: s) {
                     current = next
                 } else {
-                    let newNode = Node(name: s, value: nil)
+                    let newNode = Node(name: s, allPath: false)
                     current.addChild(node: newNode)
                     current = newNode
                 }
             }
         }
         
-        current.value = value
+        // create node with HTTP method
+        let methodNode = Node(name: method.rawValue, allPath: false)
+        methodNode.value = value
+        
+        current.addChild(node: methodNode)
     }
     
-    public func lookup(method: HttpMethod, uri: String) -> RouterResult<Node.Element>? {
+    public func lookup(method: HttpMethod, uri: String) -> RouterResult<StoredValue>? {
         var current = root
-        var urlParams = [String: String]()
+        var urlParams = StringDict()
         
-        let components = PathBuilder(method: method, uri: uri).pathComponents
+        let parsedUri = UriParser(uri: uri)
+        var components = parsedUri.pathComponents
+        components.append(method.rawValue) // POST: /action/send -> ['action', 'send', 'POST']
         
-        for s in components {
+        for (indx, s) in components.enumerated() {
             if let next = current.getChild(name: s) {
                 current = next
-            } else if let wild = current.wildChild {
-                urlParams[wild.name] = s
-                current = wild
+            } else if let paramChild = current.paramChild {
+                if paramChild.allPath {
+                    urlParams[paramChild.name] = components[indx..<components.count-1].joined(separator: "/")
+                    if let methodChild = paramChild.getChild(name: method.rawValue) {
+                        current = methodChild
+                        break
+                    } else {
+                        return nil //Result(error: RouterError.notFound(method: method, uri: uri))
+                    }
+                } else {
+                    urlParams[paramChild.name] = s
+                    current = paramChild
+                }
             } else {
-                return nil
+                return nil //Result(error: RouterError.notFound(method: method, uri: uri))
             }
         }
         
         if let value = current.value {
-            return RouterResult(value: value, urlParams: urlParams, queryParams: [:])
+            return RouterResult(value: value, urlParams: urlParams, queryParams: parsedUri.queryParams)
+        } else {
+            return nil
         }
-        
-        return nil
     }
-    
+
     var root: Node
 }

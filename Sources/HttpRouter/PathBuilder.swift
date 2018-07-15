@@ -1,20 +1,22 @@
 import Foundation
 
-public struct PathBuilder {
+struct UriParser {
     
-    public init(method: HttpMethod, uri: String) {
-        let components = (uri as NSString).pathComponents
+    static let trimmedChars = CharacterSet(charactersIn: " /")
+    
+    init(uri: String) {
+        let components = URLComponents(string: uri.trimmingCharacters(in: UriParser.trimmedChars))
         
-        var index = 0
-        while index < components.count && components[index] == "/" {
-            index += 1
+        pathComponents = NSString(string: components?.path ?? "").pathComponents
+        
+        var params = [String: String]()
+        components?.queryItems?.forEach { (queryItem) in
+            params[queryItem.name] = queryItem.value ?? ""
         }
         
-        var t = Array(components[index...])
-        t.append(method.rawValue)
-        
-        pathComponents = t
+        queryParams = params
     }
     
-    public let pathComponents: [String]
+    let pathComponents: [String]
+    let queryParams: [String: String]
 }

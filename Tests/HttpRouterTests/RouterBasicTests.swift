@@ -63,6 +63,23 @@ class RouterBasicTests: XCTestCase {
         testRouter(RouterSortedArray<String>(), routes: routes, check: check)
     }
     
+    func testNonExistingRoutes() {
+        let routes = [
+            ("GET", "/1/:id"),
+        ]
+        
+        func check<T: RouterProtocol>(router: T) where T.StoredValue == String {
+            XCTAssertNil(router.lookup(method: .get, uri: "/2/vasya"))
+            XCTAssertNil(router.lookup(method: .post, uri: "/1/vasya"))
+            XCTAssertNil(router.lookup(method: .delete, uri: "/1/"))
+        }
+        
+        testRouter(RouterDict<String>(), routes: routes, check: check)
+        testRouter(RouterArray<String>(), routes: routes, check: check)
+        testRouter(RouterSortedArray<String>(), routes: routes, check: check)
+    }
+
+    
     func testMethods() {
         let routes = [
             ("GET", "/get"),

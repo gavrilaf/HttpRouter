@@ -4,14 +4,16 @@ import Foundation
 public final class NodeDict<T>: NodeProtocol {
     public typealias Element = T
     
-    public required init(name: String, value: Element?) {
+    public required init(name: String, allPath: Bool) {
         self.name = name
-        self.value = value
+        self.allPath = allPath
     }
     
     public var name: String
     public var value: Element?
-    public var wildChild: NodeDict?
+    
+    public var allPath: Bool
+    public var paramChild: NodeDict?
     
     public func addChild(node: NodeDict) {
         children[node.name] = node
@@ -28,14 +30,16 @@ public final class NodeDict<T>: NodeProtocol {
 public final class NodeArray<T>: NodeProtocol {
     public typealias Element = T
     
-    public required init(name: String, value: Element?) {
+    public required init(name: String, allPath: Bool) {
         self.name = name
-        self.value = value
+        self.allPath = allPath
     }
     
     public var name: String
     public var value: Element?
-    public var wildChild: NodeArray?
+    
+    public var allPath: Bool
+    public var paramChild: NodeArray?
     
     public func addChild(node: NodeArray) {
         children.append(node)
@@ -53,14 +57,16 @@ public final class NodeArray<T>: NodeProtocol {
 public final class NodeSortedArray<T>: NodeProtocol {
     public typealias Element = T
     
-    public required init(name: String, value: Element?) {
+    public required init(name: String, allPath: Bool) {
         self.name = name
-        self.value = value
+        self.allPath = allPath
     }
     
     public var name: String
     public var value: Element?
-    public var wildChild: NodeSortedArray?
+    
+    public var allPath: Bool
+    public var paramChild: NodeSortedArray?
     
     public func addChild(node: NodeSortedArray) {
         children.insert(node, at: bSearch(name: node.name))
