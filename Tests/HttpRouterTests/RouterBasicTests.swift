@@ -67,7 +67,6 @@ class RouterBasicTests: XCTestCase {
         testRouter2(RouterSortedArray<String>(), routes)
     }
 
-
     func testUnicode() {
         let routes: [RouterSingleTest] = [
             (.get, "/search/:query", "/search/someth!ng+in+ünìcodé", nil, ["query": "someth!ng+in+ünìcodé"], nil),
