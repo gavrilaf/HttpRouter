@@ -1,34 +1,10 @@
 import XCTest
 import HttpRouter
 
-// (method, relativePath, request, urlParams, queryParams)
-typealias RouterTest = (HttpMethod, String, String, [Substring: Substring]?, [Substring: Substring]?)
-
-func testRouter2<T: RouterProtocol>(_ router: T, _ routes: [RouterTest]) where T.StoredValue == String {
-    for test in routes {
-        XCTAssertNoThrow(try router.add(method: test.0, relativePath: test.1, value: test.1))
-    }
-    
-    for test in routes {
-        let route = router.lookup(method: test.0, uri: test.2)
-        XCTAssertNotNil(route)
-        XCTAssertEqual(test.1, route?.value)
-        
-        if let urlParams = test.3 {
-            XCTAssertEqual(urlParams, route?.urlParams)
-        }
-        
-        if let queryParams = test.4 {
-            XCTAssertEqual(queryParams, route?.queryParams)
-        }
-    }
-}
-
-
 class RouterBasicTests: XCTestCase {
     
     func testSimpleRoutes() {
-        let routes: [RouterTest] = [
+        let routes: [RouterSingleTest] = [
             (.get, "/", "/", nil, nil),
             (.get, "/a", "/a", nil, nil),
             (.get, "/b/", "/b", nil, nil),
@@ -42,7 +18,7 @@ class RouterBasicTests: XCTestCase {
     }
     
     func testMethods() {
-        let routes: [RouterTest] = [
+        let routes: [RouterSingleTest] = [
             (.get, "/do", "/do", nil, nil),
             (.post, "/do", "/do", nil, nil),
             (.put, "/do", "/do", nil, nil),
@@ -55,7 +31,7 @@ class RouterBasicTests: XCTestCase {
     }
     
     func testUrlParams() {
-        let routes: [RouterTest] = [
+        let routes: [RouterSingleTest] = [
             (.get, "/:id", "/id123", ["id": "id123"], nil),
             (.get, "/:id/:name", "id123/ivan", ["id": "id123", "name": "ivan"], nil),
             (.get, "/:id/vasya", "id123/vasya", ["id": "id123"], nil),
@@ -68,7 +44,7 @@ class RouterBasicTests: XCTestCase {
     }
     
     func testPathParams() {
-        let routes: [RouterTest] = [
+        let routes: [RouterSingleTest] = [
             (.get, "/src/*filepath", "/src/", ["filepath": ""], nil),
             (.get, "/src2/*filepath", "/src2/script.js", ["filepath": "script.js"], nil),
             (.get, "/src3/:dir/*filepath", "/src3/scripts/main.js", ["dir": "scripts", "filepath": "main.js"], nil),
@@ -81,7 +57,7 @@ class RouterBasicTests: XCTestCase {
     }
     
     func testQueryParams() {
-        let routes: [RouterTest] = [
+        let routes: [RouterSingleTest] = [
             (.get, "/:id", "/id123?action=delete", ["id": "id123"], ["action": "delete"]),
             (.get, "/user/", "user?name=vasya&lastname=", [:], ["name": "vasya","lastname": ""]),
         ]
@@ -93,7 +69,7 @@ class RouterBasicTests: XCTestCase {
 
 
     func testUnicode() {
-        let routes: [RouterTest] = [
+        let routes: [RouterSingleTest] = [
             (.get, "/search/:query", "/search/someth!ng+in+ünìcodé", ["query": "someth!ng+in+ünìcodé"], nil),
         ]
         
