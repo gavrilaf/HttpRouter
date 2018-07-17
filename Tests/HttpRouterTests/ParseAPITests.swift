@@ -4,40 +4,30 @@ import HttpTestApi
 
 class ParseAPITests: XCTestCase {
     
+    func testRoutes() {
+        func check<T: RouterProtocol>(router: T) where T.StoredValue == String {
+            checkRoute(router, .post, "/1/users", "/1/users")
+            checkRoute(router, .get, "/1/login", "/1/login")
+            checkRoute(router, .get, "/1/roles", "/1/roles")
+            checkRoute(router, .post, "/1/roles", "/1/roles")
+            
+            checkRoute(router, .post, "/1/classes/class-name-1", "/1/classes/:className", ["className": "class-name-1"])
+            checkRoute(router, .put, "/1/classes/class-name-1/object-2", "/1/classes/:className/:objectId", ["className": "class-name-1", "objectId": "object-2"])
+            checkRoute(router, .get, "/1/classes/class-name-1/object-2", "/1/classes/:className/:objectId", ["className": "class-name-1", "objectId": "object-2"])
+            checkRoute(router, .delete, "/1/classes/class-name-1/object-3", "/1/classes/:className/:objectId", ["className": "class-name-1", "objectId": "object-3"])
+        }
+        
+        testRouter(RouterDict<String>(), routes: Parse.api, check: check)
+        testRouter(RouterArray<String>(), routes: Parse.api, check: check)
+        testRouter(RouterSortedArray<String>(), routes: Parse.api, check: check)
+    }
+    
     func testNonExisting() {
         func check<T: RouterProtocol>(router: T) where T.StoredValue == String {
             XCTAssertNil(router.lookup(method: .get, uri: "/a/b/c"))
-            XCTAssertNil(router.lookup(method: .delete, uri: "/user/repos"))
-        }
-        
-        testRouter(RouterDict<String>(), routes: Parse.api, check: check)
-        testRouter(RouterArray<String>(), routes: Parse.api, check: check)
-        testRouter(RouterSortedArray<String>(), routes: Parse.api, check: check)
-    }
-    
-    func testStatic() {
-        func check<T: RouterProtocol>(router: T) where T.StoredValue == String {
-            XCTAssertEqual("/1/users", router.lookup(method: .get, uri: "/1/users")?.value)
-            XCTAssertEqual("/1/users", router.lookup(method: .post, uri: "/1/users")?.value)
-        }
-        
-        testRouter(RouterDict<String>(), routes: Parse.api, check: check)
-        testRouter(RouterArray<String>(), routes: Parse.api, check: check)
-        testRouter(RouterSortedArray<String>(), routes: Parse.api, check: check)
-    }
-    
-    func testParams() {
-        func check<T: RouterProtocol>(router: T) where T.StoredValue == String {
-            let r1 = router.lookup(method: .get, uri: "/1/classes/swift")
-            XCTAssertNotNil(r1)
-            XCTAssertEqual(r1?.value, "/1/classes/:className")
-            XCTAssertEqual(r1?.urlParams["className"], "swift")
-            
-            let r2 = router.lookup(method: .get, uri: "/1/classes/swift/123456789")
-            XCTAssertNotNil(r2)
-            XCTAssertEqual(r2?.value, "/1/classes/:className/:objectId")
-            XCTAssertEqual(r2?.urlParams["className"], "swift")
-            XCTAssertEqual(r2?.urlParams["objectId"], "123456789")
+            XCTAssertNil(router.lookup(method: .put, uri: "/1/users"))
+            XCTAssertNil(router.lookup(method: .post, uri: "/1/login"))
+            XCTAssertNil(router.lookup(method: .post, uri: "/1/classes/class-name-1/object-2"))
         }
         
         testRouter(RouterDict<String>(), routes: Parse.api, check: check)
@@ -50,7 +40,7 @@ class ParseAPITests: XCTestCase {
             for route in Parse.api {
                 let method = HttpMethod(rawValue: route.0)!
                 let path = route.1
-                XCTAssertEqual(path, router.lookup(method: method, uri: path)?.value)
+                checkRoute(router, method, path, path)
             }
         }
         
@@ -61,8 +51,7 @@ class ParseAPITests: XCTestCase {
     
     static var allTests = [
         ("testNonExisting", testNonExisting),
-        ("testStatic", testStatic),
-        ("testParams", testParams),
+        ("testRoutes", testRoutes),
         ("testAllRoutes", testAllRoutes),
     ]
 }

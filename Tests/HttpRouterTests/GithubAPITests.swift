@@ -4,35 +4,25 @@ import HttpTestApi
 
 class GithubAPITests: XCTestCase {
     
+    func testRoutes() {
+        func check<T: RouterProtocol>(router: T) where T.StoredValue == String {
+            checkRoute(router, .post, "/authorizations", "/authorizations")
+            checkRoute(router, .get, "/feeds", "/feeds")
+            
+            checkRoute(router, .put, "/notifications/threads/100/subscription", "/notifications/threads/:id/subscription", ["id": "100"])
+            checkRoute(router, .get, "/repos/owner-1/repo-1/git/tags/sha512", "/repos/:owner/:repo/git/tags/:sha", ["owner": "owner-1", "repo": "repo-1", "sha": "sha512"])
+        }
+        
+        testRouter(RouterDict<String>(), routes: Github.api, check: check)
+        testRouter(RouterArray<String>(), routes: Github.api, check: check)
+        testRouter(RouterSortedArray<String>(), routes: Github.api, check: check)
+    }
+    
     func testNonExisting() {
         func check<T: RouterProtocol>(router: T) where T.StoredValue == String {
             XCTAssertNil(router.lookup(method: .get, uri: "/a/b/c"))
-            XCTAssertNil(router.lookup(method: .delete, uri: "/user/repos"))
-        }
-        
-        testRouter(RouterDict<String>(), routes: Github.api, check: check)
-        testRouter(RouterArray<String>(), routes: Github.api, check: check)
-        testRouter(RouterSortedArray<String>(), routes: Github.api, check: check)
-    }
-    
-    func testStatic() {
-        func check<T: RouterProtocol>(router: T) where T.StoredValue == String {
-            XCTAssertEqual("/user/repos", router.lookup(method: .get, uri: "/user/repos")?.value)
-            XCTAssertEqual("/user/repos", router.lookup(method: .post, uri: "/user/repos")?.value)
-        }
-        
-        testRouter(RouterDict<String>(), routes: Github.api, check: check)
-        testRouter(RouterArray<String>(), routes: Github.api, check: check)
-        testRouter(RouterSortedArray<String>(), routes: Github.api, check: check)
-    }
-    
-    func testParams() {
-        func check<T: RouterProtocol>(router: T) where T.StoredValue == String {
-            let r = router.lookup(method: .get, uri: "/repos/gavrilaf/httprouter/stargazers")
-            XCTAssertNotNil(r)
-            XCTAssertEqual(r?.value, "/repos/:owner/:repo/stargazers")
-            XCTAssertEqual(r?.urlParams["owner"], "gavrilaf")
-            XCTAssertEqual(r?.urlParams["repo"], "httprouter")
+            XCTAssertNil(router.lookup(method: .post, uri: "/feeds"))
+            XCTAssertNil(router.lookup(method: .post, uri: "/notifications/threads/100/subscription"))
         }
         
         testRouter(RouterDict<String>(), routes: Github.api, check: check)
@@ -45,7 +35,7 @@ class GithubAPITests: XCTestCase {
             for route in Github.api {
                 let method = HttpMethod(rawValue: route.0)!
                 let path = route.1
-                XCTAssertEqual(path, router.lookup(method: method, uri: path)?.value)
+                checkRoute(router, method, path, path)
             }
         }
         
@@ -56,8 +46,7 @@ class GithubAPITests: XCTestCase {
     
     static var allTests = [
         ("testNonExisting", testNonExisting),
-        ("testStatic", testStatic),
-        ("testParams", testParams),
+        ("testRoutes", testRoutes),
         ("testAllRoutes", testAllRoutes),
     ]
 }
