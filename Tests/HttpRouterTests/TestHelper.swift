@@ -28,24 +28,26 @@ func checkRoute<T: RouterProtocol>(_ router: T, _ method: HttpMethod, _ uri: Str
 
 // MARK: -
 
-// (method, relativePath, request, urlParams, queryParams)
-typealias RouterSingleTest = (HttpMethod, String, String, [Substring: Substring]?, [Substring: Substring]?)
+// (method, relativePath, request, value, urlParams, queryParams)
+typealias RouterSingleTest = (HttpMethod, String, String, String?, [Substring: Substring]?, [Substring: Substring]?)
 
 func testRouter2<T: RouterProtocol>(_ router: T, _ tests: [RouterSingleTest]) where T.StoredValue == String {
     for test in tests {
-        XCTAssertNoThrow(try router.add(method: test.0, relativePath: test.1, value: test.1))
+        XCTAssertNoThrow(try router.add(method: test.0, relativePath: test.1, value: test.3 ?? test.1)) // Use passed value or relative path
     }
     
     for test in tests {
         let route = router.lookup(method: test.0, uri: test.2)
         XCTAssertNotNil(route)
-        XCTAssertEqual(test.1, route?.value)
         
-        if let urlParams = test.3 {
+        let expectedValue = test.3 ?? test.1
+        XCTAssertEqual(expectedValue, route?.value)
+        
+        if let urlParams = test.4 {
             XCTAssertEqual(urlParams, route?.urlParams)
         }
         
-        if let queryParams = test.4 {
+        if let queryParams = test.5 {
             XCTAssertEqual(queryParams, route?.queryParams)
         }
     }
