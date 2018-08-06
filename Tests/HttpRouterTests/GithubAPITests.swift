@@ -16,6 +16,8 @@ class GithubAPITests: XCTestCase {
         testRouter(RouterDict<String>(), routes: Github.api, check: check)
         testRouter(RouterArray<String>(), routes: Github.api, check: check)
         testRouter(RouterSortedArray<String>(), routes: Github.api, check: check)
+        
+        testRouter(Router2<NodesDictionary, String>(), routes: Github.api, check: check)
     }
     
     func testNonExisting() {
@@ -28,6 +30,8 @@ class GithubAPITests: XCTestCase {
         testRouter(RouterDict<String>(), routes: Github.api, check: check)
         testRouter(RouterArray<String>(), routes: Github.api, check: check)
         testRouter(RouterSortedArray<String>(), routes: Github.api, check: check)
+        
+        testRouter(Router2<NodesDictionary, String>(), routes: Github.api, check: check)
     }
     
     func testAllRoutes() {
@@ -42,6 +46,8 @@ class GithubAPITests: XCTestCase {
         testRouter(RouterDict<String>(), routes: Github.api, check: check)
         testRouter(RouterArray<String>(), routes: Github.api, check: check)
         testRouter(RouterSortedArray<String>(), routes: Github.api, check: check)
+        
+        testRouter(Router2<NodesDictionary, String>(), routes: Github.api, check: check)
     }
     
     static var allTests = [

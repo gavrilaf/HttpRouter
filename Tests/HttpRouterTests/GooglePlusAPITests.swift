@@ -17,6 +17,8 @@ class GooglePlusAPITests: XCTestCase {
         testRouter(RouterDict<String>(), routes: GooglePlus.api, check: check)
         testRouter(RouterArray<String>(), routes: GooglePlus.api, check: check)
         testRouter(RouterSortedArray<String>(), routes: GooglePlus.api, check: check)
+        
+        testRouter(Router2<NodesDictionary, String>(), routes: GooglePlus.api, check: check)
     }
     
     func testNonExisting() {
@@ -29,6 +31,8 @@ class GooglePlusAPITests: XCTestCase {
         testRouter(RouterDict<String>(), routes: GooglePlus.api, check: check)
         testRouter(RouterArray<String>(), routes: GooglePlus.api, check: check)
         testRouter(RouterSortedArray<String>(), routes: GooglePlus.api, check: check)
+        
+        testRouter(Router2<NodesDictionary, String>(), routes: GooglePlus.api, check: check)
     }
     
     func testAllRoutes() {
@@ -43,6 +47,8 @@ class GooglePlusAPITests: XCTestCase {
         testRouter(RouterDict<String>(), routes: GooglePlus.api, check: check)
         testRouter(RouterArray<String>(), routes: GooglePlus.api, check: check)
         testRouter(RouterSortedArray<String>(), routes: GooglePlus.api, check: check)
+        
+        testRouter(Router2<NodesDictionary, String>(), routes: GooglePlus.api, check: check)
     }
     
     static var allTests = [
