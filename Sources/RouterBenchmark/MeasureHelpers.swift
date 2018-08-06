@@ -38,7 +38,7 @@ extension Measurement: CustomStringConvertible {
     }
 }
 
-func measureApi<T>(_ router: Router<T>, _ req: PerfRequest) -> Measurement where T.Element == String {
+func measureApi<T: RouterProtocol>(_ router: T, _ req: PerfRequest) -> Measurement where T.StoredValue == String {
     let basicIterations = 50000
     
     let staticBlock = {
