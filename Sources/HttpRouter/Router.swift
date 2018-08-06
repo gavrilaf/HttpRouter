@@ -117,9 +117,6 @@ public final class Router2<Container: NodesCollection, Value>: RouterProtocol {
         
         try components.forEach { (s) in
             current = try current.addChild(name: s) as! Node2<Container, Value>
-            print("*** \(current.name)")
-            print("*** \(String(describing: current.values?.values))")
-            print("*******")
         }
         
         // add value for HTTPMethod
