@@ -20,6 +20,8 @@ class ParseAPITests: XCTestCase {
         testRouter(RouterDict<String>(), routes: Parse.api, check: check)
         testRouter(RouterArray<String>(), routes: Parse.api, check: check)
         testRouter(RouterSortedArray<String>(), routes: Parse.api, check: check)
+        
+        testRouter(Router2<NodesDictionary, String>(), routes: Parse.api, check: check)
     }
     
     func testNonExisting() {
@@ -33,6 +35,8 @@ class ParseAPITests: XCTestCase {
         testRouter(RouterDict<String>(), routes: Parse.api, check: check)
         testRouter(RouterArray<String>(), routes: Parse.api, check: check)
         testRouter(RouterSortedArray<String>(), routes: Parse.api, check: check)
+        
+        testRouter(Router2<NodesDictionary, String>(), routes: Parse.api, check: check)
     }
     
     func testAllRoutes() {
@@ -47,6 +51,8 @@ class ParseAPITests: XCTestCase {
         testRouter(RouterDict<String>(), routes: Parse.api, check: check)
         testRouter(RouterArray<String>(), routes: Parse.api, check: check)
         testRouter(RouterSortedArray<String>(), routes: Parse.api, check: check)
+        
+        testRouter(Router2<NodesDictionary, String>(), routes: Parse.api, check: check)
     }
     
     static var allTests = [

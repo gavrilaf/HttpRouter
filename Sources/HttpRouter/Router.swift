@@ -103,3 +103,62 @@ public final class Router<Node: NodeProtocol>: RouterProtocol {
 
     var root: Node
 }
+
+// MARK: -
+public final class Router2<Container: NodesCollection, Value>: RouterProtocol {
+    
+    public init() {
+        root = Node2("", .regular)
+    }
+    
+    public func add(method: HttpMethod, relativePath: String, value: StoredValue) throws {
+        var current = root
+        let components = UriParser(uri: relativePath).pathComponents
+        
+        try components.forEach { (s) in
+            current = try current.addChild(name: s) as! Node2<Container, Value>
+            print("*** \(current.name)")
+            print("*** \(String(describing: current.values?.values))")
+            print("*******")
+        }
+        
+        // add value for HTTPMethod
+        current.add(value: value, forMethod: method)
+    }
+    
+    public func lookup(method: HttpMethod, uri: String) -> RouterResult<Value>? {
+        var current: NodeProtocol2 = root
+        var urlParams = [Substring: Substring]()
+        
+        let parsedUri = UriParser(uri: uri)
+        var components = parsedUri.pathComponents
+        
+        outer: for (indx, s) in components.enumerated() {
+            guard let node = current.getChild(name: s) else { return nil }
+            
+            switch node.type {
+            case .regular:
+                current = node
+            case .wildcard(let capturePath):
+                if capturePath {
+                    let joined = components[indx..<components.count].joined(separator: "/")
+                    urlParams[node.name] = joined.substr
+                    current = node
+                    break outer
+                } else {
+                    urlParams[node.name] = s
+                    current = node
+                }
+            }
+        }
+        
+        if let value = (current as! Node2<Container, Value>).getValue(forMethod: method) {
+           return RouterResult(value: value, urlParams: urlParams, queryParams: parsedUri.queryParams)
+        }
+        
+        return nil
+    }
+    
+    var root: Node2<Container, Value>
+}
+

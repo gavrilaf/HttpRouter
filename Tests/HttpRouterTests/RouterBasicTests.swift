@@ -1,5 +1,5 @@
 import XCTest
-import HttpRouter
+@testable import HttpRouter
 
 class RouterBasicTests: XCTestCase {
     
@@ -15,6 +15,8 @@ class RouterBasicTests: XCTestCase {
         testRouter2(RouterDict<String>(), routes)
         testRouter2(RouterArray<String>(), routes)
         testRouter2(RouterSortedArray<String>(), routes)
+        
+        testRouter2(Router2<NodesDictionary, String>(), routes)
     }
     
     func testMethods() {
@@ -28,6 +30,8 @@ class RouterBasicTests: XCTestCase {
         testRouter2(RouterDict<String>(), routes)
         testRouter2(RouterArray<String>(), routes)
         testRouter2(RouterSortedArray<String>(), routes)
+        
+        testRouter2(Router2<NodesDictionary, String>(), routes)
     }
     
     func testUrlParams() {
@@ -41,11 +45,12 @@ class RouterBasicTests: XCTestCase {
         testRouter2(RouterDict<String>(), routes)
         testRouter2(RouterArray<String>(), routes)
         testRouter2(RouterSortedArray<String>(), routes)
+        
+        testRouter2(Router2<NodesDictionary, String>(), routes)
     }
     
     func testPathParams() {
         let routes: [RouterSingleTest] = [
-            (.get, "/src/*filepath", "/src/", nil, ["filepath": ""], nil),
             (.get, "/src2/*filepath", "/src2/script.js", nil, ["filepath": "script.js"], nil),
             (.get, "/src3/:dir/*filepath", "/src3/scripts/main.js", nil, ["dir": "scripts", "filepath": "main.js"], nil),
             (.get, "/src4/*filepath", "/src4/scripts/main.js", nil, ["filepath": "scripts/main.js"], nil),
@@ -54,6 +59,8 @@ class RouterBasicTests: XCTestCase {
         testRouter2(RouterDict<String>(), routes)
         testRouter2(RouterArray<String>(), routes)
         testRouter2(RouterSortedArray<String>(), routes)
+        
+        testRouter2(Router2<NodesDictionary, String>(), routes)
     }
     
     func testQueryParams() {
@@ -65,6 +72,8 @@ class RouterBasicTests: XCTestCase {
         testRouter2(RouterDict<String>(), routes)
         testRouter2(RouterArray<String>(), routes)
         testRouter2(RouterSortedArray<String>(), routes)
+        
+        testRouter2(Router2<NodesDictionary, String>(), routes)
     }
 
     func testUnicode() {
@@ -75,6 +84,8 @@ class RouterBasicTests: XCTestCase {
         testRouter2(RouterDict<String>(), routes)
         testRouter2(RouterArray<String>(), routes)
         testRouter2(RouterSortedArray<String>(), routes)
+        
+        testRouter2(Router2<NodesDictionary, String>(), routes)
     }
 
     func testNonExistingRoutes() {
@@ -91,6 +102,8 @@ class RouterBasicTests: XCTestCase {
         testRouter(RouterDict<String>(), routes: routes, check: check)
         testRouter(RouterArray<String>(), routes: routes, check: check)
         testRouter(RouterSortedArray<String>(), routes: routes, check: check)
+        
+        testRouter(Router2<NodesDictionary, String>(), routes: routes, check: check)
     }
 
     static var allTests = [

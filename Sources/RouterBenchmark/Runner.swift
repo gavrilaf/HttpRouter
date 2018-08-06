@@ -20,7 +20,10 @@ func RunMeasure() -> [Measurement] {
     ]
     
     let results = requests.flatMap {
-        return [measureApi(RouterDict<String>(), $0), measureApi(RouterArray<String>(), $0), measureApi(RouterSortedArray<String>(), $0)]
+        return [measureApi(RouterDict<String>(), $0),
+                measureApi(RouterArray<String>(), $0),
+                measureApi(RouterSortedArray<String>(), $0),
+                measureApi(Router2<NodesDictionary, String>(), $0)]
     }
     
     return results
