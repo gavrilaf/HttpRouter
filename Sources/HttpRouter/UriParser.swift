@@ -47,30 +47,30 @@ struct UriParser {
 
 // MARK:
 
-struct UriParser2 {
+struct UriParser2: Sequence {
     static let questionMark = Character("?")
     static let amp = Character("&")
     static let eq = Character("=")
     
-    lazy var queryParams: [Substring: Substring] = {
-        if pathEndIndex != uri.endIndex {
-            let queryIndex = uri.index(after: pathEndIndex)
-            return UriParser2.parseQuery(uri[queryIndex...])
-        } else {
-            return [:]
-        }
-    }()
+    let uri: String
+    let queryParams: [Substring: Substring]
     
     init(uri: String) {
         self.uri = uri
-        self.pathEndIndex = uri.index(of: UriParser.questionMark) ?? uri.endIndex
+        
+        if let end = uri.index(of: UriParser.questionMark) {
+            self.pathEndIndex = end
+            self.queryParams = UriParser2.parseQuery(uri[uri.index(after: end)...])
+        } else {
+            self.pathEndIndex = uri.endIndex
+            self.queryParams = [:]
+        }
     }
     
     func makeIterator() -> PathIterator {
         return PathIterator(uri: uri[Range(uncheckedBounds: (lower: uri.startIndex, upper: pathEndIndex))])
     }
     
-    private let uri: String
     private let pathEndIndex: String.Index
     
     private static func parseQuery(_ s: Substring) -> [Substring: Substring] {

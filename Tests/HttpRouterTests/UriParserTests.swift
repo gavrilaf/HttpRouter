@@ -15,7 +15,7 @@ fileprivate func check(_ uri: String, _ pathComponets: [Substring], _ queryCompo
     XCTAssertEqual(pathComponets, parser.pathComponents)
     XCTAssertEqual(queryComponents, parser.queryParams)
     
-    var parser2 = UriParser2(uri: uri)
+    let parser2 = UriParser2(uri: uri)
     XCTAssertEqual(pathComponets, readPathComponents(parser2))
     XCTAssertEqual(queryComponents, parser2.queryParams)
 }
@@ -40,8 +40,18 @@ class UriParserTests: XCTestCase {
         check("/user/profile/:id?rewrite=true&verbose=0&level=audit", ["user", "profile", ":id"], ["rewrite": "true", "verbose": "0", "level": "audit"])
     }
     
+    func testIterator() {
+        let uri = UriParser2(uri: "/user/profile/vasya/add")
+        var expected = ["user", "profile", "vasya", "add"]
+        
+        for (indx, s) in uri.enumerated() {
+            XCTAssertEqual(expected[indx], String(s))
+        }
+    }
+    
     static var allTests = [
         ("testPathes", testPathes),
         ("testQueryParams", testQueryParams),
+        ("testIterator", testIterator)
     ]
 }
