@@ -99,27 +99,29 @@ struct PathIterator: IteratorProtocol {
     }
     
     mutating func next() -> Substring? {
-        guard currentPos < uri.endIndex else { return nil }
-        
-        let substr = uri[Range(uncheckedBounds: (lower: currentPos, upper: uri.endIndex))]
-        if let nextIndex = substr.index(of: PathIterator.slash) {
-            let dist = substr.distance(from: substr.startIndex, to: nextIndex)
-            let convertedIndex = uri.index(currentPos, offsetBy: dist)
-            let result = uri[Range(uncheckedBounds: (lower: currentPos, upper: convertedIndex))]
+        while true {
+            guard currentPos < uri.endIndex else { return nil }
             
-            previousPos = currentPos
-            currentPos = uri.index(after: convertedIndex)
-            
-            if result.isEmpty {
-                return next()
+            let substr = uri[Range(uncheckedBounds: (lower: currentPos, upper: uri.endIndex))]
+            if let nextIndex = substr.index(of: PathIterator.slash) {
+                let dist = substr.distance(from: substr.startIndex, to: nextIndex)
+                let convertedIndex = uri.index(currentPos, offsetBy: dist)
+                let result = uri[Range(uncheckedBounds: (lower: currentPos, upper: convertedIndex))]
+                
+                previousPos = currentPos
+                currentPos = uri.index(after: convertedIndex)
+                
+                if result.isEmpty {
+                    continue
+                }
+                
+                return result
+            } else {
+                previousPos = currentPos
+                currentPos = uri.endIndex
+                return substr
             }
-            
-            return result
         }
-        
-        currentPos = uri.endIndex
-        
-        return substr
     }
     
     func remainingPath() -> Substring {

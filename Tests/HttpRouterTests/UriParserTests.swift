@@ -49,9 +49,28 @@ class UriParserTests: XCTestCase {
         }
     }
     
+    func testPath() {
+        let uri = UriParser2(uri: "src/script.js")
+        var it = uri.makeIterator()
+        
+        XCTAssertEqual("src", it.next())
+        //XCTAssertEqual("src/script.js", it.remainingPath())
+        XCTAssertEqual("script.js", it.next())
+        XCTAssertEqual("script.js", it.remainingPath())
+        
+        
+        /*let uri2 = UriParser2(uri: "open/src/script.js")
+        var it2 = uri2.makeIterator()
+        
+        XCTAssertEqual("open", it2.next())
+        XCTAssertEqual("src", it2.next())
+        XCTAssertEqual("src/script.js", it2.remainingPath())*/
+    }
+    
     static var allTests = [
         ("testPathes", testPathes),
         ("testQueryParams", testQueryParams),
-        ("testIterator", testIterator)
+        ("testIterator", testIterator),
+        ("testPath", testPath),
     ]
 }
