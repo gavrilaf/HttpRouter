@@ -113,10 +113,9 @@ public final class Router2<Container: NodesCollection, Value>: RouterProtocol {
     
     public func add(method: HttpMethod, relativePath: String, value: StoredValue) throws {
         var current = root
-        
         let parsedUri = UriParser2(uri: relativePath)
-        var it = parsedUri.makeIterator()
-        while let s = it.next() {
+        
+        for s in parsedUri {
             current = try current.addChild(name: s) as! Node2<Container, Value>
         }
         
@@ -128,9 +127,8 @@ public final class Router2<Container: NodesCollection, Value>: RouterProtocol {
         var current: NodeProtocol2 = root
         var urlParams = [Substring: Substring]()
         
-        var parsedUri = UriParser2(uri: uri)
+        let parsedUri = UriParser2(uri: uri)
         var it = parsedUri.makeIterator()
-        
         outer: while let s = it.next() {
             guard let node = current.getChild(name: s) else { return nil }
             
