@@ -43,5 +43,95 @@ struct UriParser {
         }
         return res
     }
-    
 }
+
+// MARK:
+
+struct UriParser2: Sequence {
+    static let questionMark = Character("?")
+    static let amp = Character("&")
+    static let eq = Character("=")
+    
+    let uri: String
+    let queryParams: [Substring: Substring]
+    
+    init(uri: String) {
+        self.uri = uri
+        
+        if let end = uri.index(of: UriParser.questionMark) {
+            self.pathEndIndex = end
+            self.queryParams = UriParser2.parseQuery(uri[uri.index(after: end)...])
+        } else {
+            self.pathEndIndex = uri.endIndex
+            self.queryParams = [:]
+        }
+    }
+    
+    func makeIterator() -> PathIterator {
+        return PathIterator(uri: uri[Range(uncheckedBounds: (lower: uri.startIndex, upper: pathEndIndex))])
+    }
+    
+    private let pathEndIndex: String.Index
+    
+    private static func parseQuery(_ s: Substring) -> [Substring: Substring] {
+        let params = s.split(separator: UriParser.amp)
+        
+        var res = [Substring: Substring]()
+        params.forEach {
+            let pp = $0.split(separator: UriParser.eq)
+            if pp.count == 1 {
+                res[pp[0]] = ""
+            } else if pp.count > 1 {
+                res[pp[0]] = pp[1]
+            }
+        }
+        return res
+    }
+}
+
+struct PathIterator: IteratorProtocol {
+    static let slash = Character("/")
+    
+    init(uri: Substring) {
+        self.uri = uri
+        self.currentPos = uri.startIndex
+        self.previousPos = self.currentPos
+    }
+    
+    mutating func next() -> Substring? {
+        while true {
+            guard currentPos < uri.endIndex else { return nil }
+            
+            let substr = uri[Range(uncheckedBounds: (lower: currentPos, upper: uri.endIndex))]
+            if let nextIndex = substr.index(of: PathIterator.slash) {
+                let dist = substr.distance(from: substr.startIndex, to: nextIndex)
+                let convertedIndex = uri.index(currentPos, offsetBy: dist)
+                let result = uri[Range(uncheckedBounds: (lower: currentPos, upper: convertedIndex))]
+                
+                previousPos = currentPos
+                currentPos = uri.index(after: convertedIndex)
+                
+                if result.isEmpty {
+                    continue
+                }
+                
+                return result
+            } else {
+                previousPos = currentPos
+                currentPos = uri.endIndex
+                return substr
+            }
+        }
+    }
+    
+    func remainingPath() -> Substring {
+        return uri[Range(uncheckedBounds: (lower: previousPos, upper: uri.endIndex))]
+    }
+    
+    // MARK:
+    let uri: Substring
+    var currentPos: String.Index
+    var previousPos: String.Index
+}
+
+

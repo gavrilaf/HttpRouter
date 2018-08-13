@@ -113,9 +113,9 @@ public final class Router2<Container: NodesCollection, Value>: RouterProtocol {
     
     public func add(method: HttpMethod, relativePath: String, value: StoredValue) throws {
         var current = root
-        let components = UriParser(uri: relativePath).pathComponents
+        let parsedUri = UriParser2(uri: relativePath)
         
-        try components.forEach { (s) in
+        for s in parsedUri {
             current = try current.addChild(name: s) as! Node2<Container, Value>
         }
         
@@ -127,10 +127,9 @@ public final class Router2<Container: NodesCollection, Value>: RouterProtocol {
         var current: NodeProtocol2 = root
         var urlParams = [Substring: Substring]()
         
-        let parsedUri = UriParser(uri: uri)
-        var components = parsedUri.pathComponents
-        
-        outer: for (indx, s) in components.enumerated() {
+        let parsedUri = UriParser2(uri: uri)
+        var it = parsedUri.makeIterator()
+        outer: while let s = it.next() {
             guard let node = current.getChild(name: s) else { return nil }
             
             switch node.type {
@@ -138,8 +137,7 @@ public final class Router2<Container: NodesCollection, Value>: RouterProtocol {
                 current = node
             case .wildcard(let capturePath):
                 if capturePath {
-                    let joined = components[indx..<components.count].joined(separator: "/")
-                    urlParams[node.name] = joined.substr
+                    urlParams[node.name] = it.remainingPath()
                     current = node
                     break outer
                 } else {
